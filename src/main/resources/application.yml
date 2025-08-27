@@ -13,7 +13,7 @@ spring:
   
   # WebFlux 설정
   webflux:
-    base-path: /api
+    base-path: /account-book
 
 # 로깅 설정
 logging:
