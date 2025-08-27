@@ -1,0 +1,22 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: account-book
+  
+  # PostgreSQL R2DBC 설정 (나중에 DB 연결할 때 사용)
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/accountbook
+    username: postgres
+    password: password
+  
+  # WebFlux 설정
+  webflux:
+    base-path: /api
+
+# 로깅 설정
+logging:
+  level:
+    com.accountbook: DEBUG
+    org.springframework.r2dbc: DEBUG
