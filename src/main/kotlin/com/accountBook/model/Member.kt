@@ -3,9 +3,9 @@ package com.accountbook.model
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Table
 
-@Table("division")
-data class Division (
+@Table("account_member")
+data class Member (
     @Id
-    val divisionId: String,
-    val divisionNm: String,
+    val memberId: String,
+    val memberNm: String,
 ) : BaseEntity()
