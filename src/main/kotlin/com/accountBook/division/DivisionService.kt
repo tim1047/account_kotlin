@@ -1,7 +1,7 @@
-package com.accountbook.service
+package com.accountbook.division
 
-import com.accountbook.dto.DivisionResponseDto
-import com.accountbook.repository.DivisionRepository
+import com.accountbook.division.dto.DivisionDto
+import com.accountbook.division.DivisionRepository
 import org.springframework.stereotype.Service
 
 @Service
@@ -9,10 +9,10 @@ class DivisionService(
     private val divisionRepository: DivisionRepository
 ) {
     
-    suspend fun getDivisions(): List<DivisionResponseDto> {
+    suspend fun getDivisions(): List<DivisionDto> {
         return divisionRepository.getDivisions()
             .map { division ->
-                DivisionResponseDto(
+                DivisionDto(
                     divisionId = division.divisionId,
                     divisionNm = division.divisionNm,
                 )

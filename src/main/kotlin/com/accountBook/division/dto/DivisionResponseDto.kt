@@ -1,4 +1,4 @@
-package com.accountbook.dto
+package com.accountbook.division.dto
 
 data class DivisionResponseDto(
     val divisionId: String,

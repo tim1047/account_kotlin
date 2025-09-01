@@ -1,4 +1,4 @@
-package com.accountbook.repository
+package com.accountbook.member
 
 import com.accountbook.model.Member
 import org.springframework.data.r2dbc.repository.Query

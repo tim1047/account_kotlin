@@ -1,4 +1,4 @@
-package com.accountbook.dto
+package com.accountbook.member.dto
 
 data class MemberResponseDto(
     val memberId: String,

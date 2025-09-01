@@ -1,7 +1,7 @@
-package com.accountbook.service
+package com.accountbook.member
 
-import com.accountbook.dto.MemberResponseDto
-import com.accountbook.repository.MemberRepository
+import com.accountbook.member.dto.MemberDto
+import com.accountbook.member.MemberRepository
 import org.springframework.stereotype.Service
 
 @Service
@@ -9,10 +9,10 @@ class MemberService(
     private val memberRepository: MemberRepository
 ) {
     
-    suspend fun getMembers(): List<MemberResponseDto> {
+    suspend fun getMembers(): List<MemberDto> {
         return memberRepository.getMembers()
             .map { member ->
-                MemberResponseDto(
+                MemberDto(
                     memberId = member.memberId,
                     memberNm = member.memberNm,
                 )

@@ -1,7 +1,7 @@
 package com.accountbook.dto
 
 data class BaseResponseDto<T>(
-    val resultMessage: String,
+    val resultMessage: String?,
     val resultData: T?
 ) {
     companion object {
@@ -22,7 +22,7 @@ data class BaseResponseDto<T>(
         }
         
         // 실패 응답
-        fun <T> error(message: String): BaseResponseDto<T> {
+        fun <T> error(message: String? = null): BaseResponseDto<T> {
             return BaseResponseDto(
                 resultMessage = message,
                 resultData = null

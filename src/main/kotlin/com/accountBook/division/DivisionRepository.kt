@@ -1,4 +1,4 @@
-package com.accountbook.repository
+package com.accountbook.division
 
 import com.accountbook.model.Division
 import org.springframework.data.r2dbc.repository.Query
