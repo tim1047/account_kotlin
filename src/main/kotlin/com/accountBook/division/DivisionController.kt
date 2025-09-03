@@ -26,7 +26,7 @@ class DivisionController (
             }
             BaseResponseDto.success(responseDto)
         } catch (e: Exception) {
-            BaseResponseDto.error("FAIL")
+            BaseResponseDto.error(e.message)
         }           
     }
 }

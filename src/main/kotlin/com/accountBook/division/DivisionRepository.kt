@@ -4,10 +4,11 @@ import com.accountbook.model.Division
 import org.springframework.data.r2dbc.repository.Query
 import org.springframework.data.repository.kotlin.CoroutineCrudRepository
 import org.springframework.stereotype.Repository
+import DivisionQuery
 
 @Repository
 interface DivisionRepository : CoroutineCrudRepository<Division, String> {
     
-    @Query("SELECT * FROM division")
+    @Query(DivisionQuery.GET_DIVISIONS)
     suspend fun getDivisions(): List<Division>
 }
