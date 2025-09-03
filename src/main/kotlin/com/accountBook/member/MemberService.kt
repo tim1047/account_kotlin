@@ -1,6 +1,7 @@
 package com.accountbook.member
 
 import com.accountbook.member.dto.MemberDto
+import com.accountbook.member.dto.MemberSumDto
 import com.accountbook.member.MemberRepository
 import org.springframework.stereotype.Service
 
@@ -17,5 +18,9 @@ class MemberService(
                     memberNm = member.memberNm,
                 )
             }
+    }
+
+    suspend fun getMembersSum(divisionId: String, strtDt: String, endDt: String): List<MemberSumDto> {
+        return memberRepository.getMembersSum(divisionId, strtDt, endDt)
     }
 }
