@@ -7,5 +7,5 @@ import com.fasterxml.jackson.annotation.JsonInclude
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class AssetResponseDto (
     val assetId: String,
-    val assetNm: String
+    val assetNm: String?
 ) 
