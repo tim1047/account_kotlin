@@ -17,4 +17,8 @@ data class MyAsset(
     val qty: Double,
     val exchangeRateYn: String,
     val myAssetGroupId: String,
-) : BaseEntity()
+) : BaseEntity<String>() {
+    override fun getId(): String? = myAssetId
+
+    override fun isNew(): Boolean = forceInsert
+}

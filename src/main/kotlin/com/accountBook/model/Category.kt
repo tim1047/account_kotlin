@@ -8,4 +8,8 @@ data class Category (
     @Id
     val categoryId: String,
     val categoryNm: String,
-) : BaseEntity()
+) : BaseEntity<String>() {
+    override fun getId(): String? = categoryId
+
+    override fun isNew(): Boolean = forceInsert
+}

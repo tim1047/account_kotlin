@@ -3,9 +3,10 @@ package com.accountbook.model
 import com.fasterxml.jackson.annotation.JsonFormat
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.LastModifiedDate
+import org.springframework.data.domain.Persistable
 import java.time.LocalDateTime
 
-abstract class BaseEntity {
+abstract class BaseEntity<T>: Persistable<T> {
     
     @CreatedDate
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -17,4 +18,7 @@ abstract class BaseEntity {
     
     var regpeId: String? = null
     var modpeId: String? = null
+
+    @Transient
+    var forceInsert: Boolean = false
 }

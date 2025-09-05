@@ -8,4 +8,8 @@ data class Member (
     @Id
     val memberId: String,
     val memberNm: String,
-) : BaseEntity()
+) : BaseEntity<String>() {
+    override fun getId(): String? = memberId
+
+    override fun isNew(): Boolean = forceInsert
+}

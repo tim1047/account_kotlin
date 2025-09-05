@@ -8,4 +8,8 @@ data class Asset (
     @Id
     val assetId: String,
     val assetNm: String,
-) : BaseEntity()
+) : BaseEntity<String>() {
+    override fun getId(): String? = assetId
+
+    override fun isNew(): Boolean = forceInsert
+}

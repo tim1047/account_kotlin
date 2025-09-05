@@ -11,4 +11,8 @@ data class Payment (
     val memberId: String,
     val paymentType: String,
     val useYn: String
-) : BaseEntity()
+) : BaseEntity<String>() {
+    override fun getId(): String? = paymentId
+
+    override fun isNew(): Boolean = forceInsert
+}
