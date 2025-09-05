@@ -59,4 +59,18 @@ class DivisionController (
             BaseResponseDto.error(e.message)
         }           
     }
+
+    @GetMapping("/{divisionId}/sum-daily")
+    suspend fun getDivisionSumDaily(
+        @PathVariable(value = "divisionId", required = false) divisionId: String,
+        @RequestParam(value = "strtDt", required = false) strtDt: String,
+        @RequestParam(value = "endDt", required = false) endDt: String,
+    ): BaseResponseDto<Any> {
+        return try {
+            val divisionSumDaily = divisionService.getDivisionSumDaily(divisionId, strtDt, endDt)
+            BaseResponseDto.success(divisionSumDaily)
+        } catch (e: Exception) {
+            BaseResponseDto.error(e.message)
+        }           
+    }
 }

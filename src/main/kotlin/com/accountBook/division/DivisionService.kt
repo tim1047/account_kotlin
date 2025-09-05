@@ -9,8 +9,11 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 import java.time.format.DateTimeFormatter
 import java.time.YearMonth
+import java.time.LocalDate
 import DivisionConstants
 import kotlin.math.round
+import kotlin.collections.mutableMapOf
+import kotlin.collections.mutableListOf
 
 @Service
 class DivisionService(
@@ -53,7 +56,7 @@ class DivisionService(
     }
 
     suspend fun getDivisionSumGroupByMonth(divisionId: String, procDt: String): List<DivisionSumGroupByMonthDto> {
-        var divisionSumGroupByMonthList = ArrayList<DivisionSumGroupByMonthDto>();
+        var divisionSumGroupByMonthList = ArrayList<DivisionSumGroupByMonthDto>()
 
         val inputFormatter = DateTimeFormatter.ofPattern("yyyyMM")
         val outputFormatter = DateTimeFormatter.ofPattern("yyyyMMdd")
@@ -74,5 +77,42 @@ class DivisionService(
             }
         }
         return divisionSumGroupByMonthList.reversed()
+    }
+
+    suspend fun getDivisionSumDaily(divisionId: String, strtDt: String, endDt: String): Any {
+        var divisionSumDaily = divisionRepository.getDivisionsSumDaily(divisionId, strtDt, endDt)
+
+        var divisionSumDailyList = ArrayList<Any>()
+        var divisionSumDailyMap: MutableMap<String, MutableList<BigDecimal>> = mutableMapOf()
+        var accountYYYYMMSet: MutableSet<String> = mutableSetOf("일자")
+
+        val formatter = DateTimeFormatter.ofPattern("yyyyMM")
+
+        for (d in divisionSumDaily) {
+            val accountDt = YearMonth.parse(d.accountYYYYMM, formatter)
+            val year = YearMonth.from(accountDt).year
+            val month = YearMonth.from(accountDt).monthValue
+
+            accountYYYYMMSet.add(year.toString() + "년 " + month.toString() + "월")
+            
+            if (divisionSumDailyMap.containsKey(month.toString())) {
+                val lastSumPirce = divisionSumDailyMap[month.toString()]!!.last()
+                divisionSumDailyMap[month.toString()]!!.add(lastSumPirce.add(d.sumPrice!!))
+            } else {
+                divisionSumDailyMap[month.toString()] = mutableListOf(d.sumPrice!!)
+            }
+        }
+        divisionSumDailyList.add(0, accountYYYYMMSet.toMutableList())
+
+        for (i in 0..30) {
+            var resultList: MutableList<Any> = mutableListOf()
+            resultList.add(0, (i+1).toString() + "일")
+
+            divisionSumDailyMap.forEach { (_, value) ->
+                resultList.add(value.getOrElse(i) { value.last() })
+            }
+            divisionSumDailyList.add(resultList)
+        }
+        return divisionSumDailyList
     }
 }

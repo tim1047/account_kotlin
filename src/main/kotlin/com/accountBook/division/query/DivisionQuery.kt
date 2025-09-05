@@ -50,4 +50,25 @@ object DivisionQuery {
         where	1=1
         order by zz.sum_price desc
     """
+
+    const val GET_DIVISIONS_SUM_DAILY = """
+        select	c.*
+        from	(
+                    select	b.account_dt
+                        ,	b.sum_price
+                        ,	substring(b.account_dt, 0, 7) as account_yyyymm
+                        ,	substring(b.account_dt, 7, 9) as account_dd
+                    from	(
+                                select	a.account_dt
+                                    ,	sum(case when a.point_price > 0 and a.division_id = '3' then a.price - a.point_price else a.price end)	   as sum_price
+                                from	account	a
+                                where	1=1
+                                and		a.account_dt between :strtDt and :endDt
+                                and		a.division_id = :divisionId
+                                group by a.account_dt
+                            ) b
+                    where	1=1
+                ) c
+        order by c.account_dd, c.account_yyyymm
+    """
 }
