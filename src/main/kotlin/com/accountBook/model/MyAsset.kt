@@ -1,0 +1,20 @@
+package com.accountbook.model
+
+import org.springframework.data.annotation.Id
+import org.springframework.data.relational.core.mapping.Table
+import org.apache.logging.log4j.util.StringMap
+import java.math.BigDecimal
+
+@Table("myAsset")
+data class MyAsset(
+    @Id
+    val myAssetId: String,
+    val myAssetNm: String, 
+    val assetId: String,
+    val ticker: String,
+    val priceDivCd: String,
+    val price: BigDecimal,
+    val qty: Double,
+    val exchangeRateYn: String,
+    val myAssetGroupId: String,
+) : BaseEntity()
