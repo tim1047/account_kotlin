@@ -39,6 +39,8 @@ dependencies {
     // 테스트
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("io.projectreactor:reactor-test")
+
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 }
 
 tasks.withType<KotlinCompile> {
