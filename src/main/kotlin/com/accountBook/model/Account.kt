@@ -4,11 +4,13 @@ import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Table
 import org.apache.logging.log4j.util.StringMap
 import java.math.BigDecimal
+import jakarta.persistence.*
 
+@Entity
 @Table("account")
 data class Account(
     @Id
-    val accountId: Number,
+    val accountId: Long,
     val accountDt: String,
     val divisionId: String,
     val memberId: String,
@@ -19,4 +21,8 @@ data class Account(
     val remark: String,
     val impulseYn: String,
     val pointPrice: BigDecimal,
-) : BaseEntity()
+) : BaseEntity<Long>() {
+    override fun getId(): Long? = accountId
+
+    override fun isNew(): Boolean = forceInsert
+}

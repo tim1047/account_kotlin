@@ -63,4 +63,8 @@ object AccountQuery {
                 ) zz
         where	1=1
     """
+
+    const val GET_ACCOUNT_SEQ = """
+        select nextval('seq_account')
+    """
 }

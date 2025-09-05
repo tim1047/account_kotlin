@@ -2,17 +2,16 @@ package com.accountbook.account
 
 import com.accountbook.model.Division
 import com.accountbook.model.Account
-import com.accountbook.division.dto.DivisionResponseDto
-import com.accountbook.division.dto.DivisionSumResponseDto
-import com.accountbook.division.dto.DivisionSumGroupByMonthResponseDto
 import com.accountbook.dto.BaseResponseDto
-import com.accountbook.division.DivisionService
 import com.accountbook.account.dto.AccountResponseDto
+import com.accountbook.account.dto.CreateAccountRequestDto
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 
 @RestController
 @RequestMapping("/account")
@@ -58,5 +57,17 @@ class AccountController (
         } catch (e: Exception) {
             BaseResponseDto.error(e.message)
         }           
+    }
+
+    @PostMapping("")
+    suspend fun insertAccounts(
+       @RequestBody request: CreateAccountRequestDto
+    ): BaseResponseDto<String> {
+        return try {
+            accountService.insertAccount(request)
+            BaseResponseDto.success("")
+        } catch (e: Exception) {
+            BaseResponseDto.error(e.message)
+        }
     }
 }

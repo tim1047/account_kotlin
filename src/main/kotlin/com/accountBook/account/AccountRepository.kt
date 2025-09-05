@@ -15,5 +15,6 @@ interface AccountRepository : CoroutineCrudRepository<Account, String> {
     @Query(AccountQuery.GET_ACCOUNTS)
     suspend fun getAccounts(strtDt: String, endDt: String, divisionId: String, memberId: String, categoryId: String, categorySeq: String, fixedPriceYn: String): List<AccountDto>
 
-    
+    @Query(AccountQuery.GET_ACCOUNT_SEQ)
+    suspend fun getAccountSeq(): Long
 }
