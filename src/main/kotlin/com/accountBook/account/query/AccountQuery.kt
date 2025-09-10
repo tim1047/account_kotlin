@@ -15,7 +15,7 @@ object AccountQuery {
                         ,	z.category_id
                         ,	z.category_nm
                         ,	z.category_seq
-                        ,	cd.category_seq_nm
+                        ,	coalesce(cd.category_seq_nm, '') as category_seq_nm
                         ,	z.price
                         ,	z.remark
                         ,	z.impulse_yn
