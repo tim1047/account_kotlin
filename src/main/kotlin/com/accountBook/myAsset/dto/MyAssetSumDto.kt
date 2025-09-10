@@ -5,7 +5,7 @@ import com.accountbook.dto.BaseDto
 import java.math.BigDecimal
 
 data class MyAssetSumDto (
-    val accumDt: String?,
+    var accumDt: String?,
     val assetId: String,
     val assetNm: String, 
     val sumPrice: BigDecimal,

@@ -23,6 +23,7 @@ class MyAssetService(
                 sumPrice = sumPrice.minus(BigDecimal.valueOf(-1))
             }
             totalSumPrice = totalSumPrice.add(sumPrice)
+            myAssetSum.accumDt = procDt
         }
         myAssetSums.add(0, MyAssetSumDto(procDt, "0", "총 자산", totalSumPrice.setScale(0, RoundingMode.DOWN)))
         return myAssetSums
