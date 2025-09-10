@@ -5,6 +5,7 @@ import com.accountbook.model.Account
 import com.accountbook.dto.BaseResponseDto
 import com.accountbook.account.dto.AccountResponseDto
 import com.accountbook.account.dto.CreateAccountRequestDto
+import com.accountbook.account.dto.UpdateAccountRequestDto
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.DeleteMapping
 
 @RestController
 @RequestMapping("/account")
@@ -61,10 +64,35 @@ class AccountController (
 
     @PostMapping("")
     suspend fun insertAccounts(
-       @RequestBody request: CreateAccountRequestDto
+        @RequestBody request: CreateAccountRequestDto
     ): BaseResponseDto<String> {
         return try {
             accountService.insertAccount(request)
+            BaseResponseDto.success("")
+        } catch (e: Exception) {
+            BaseResponseDto.error(e.message)
+        }
+    }
+
+    @PutMapping("/{accountId}")
+    suspend fun updateAccounts(
+        @PathVariable accountId: String,
+        @RequestBody updateAccountRequestDto: UpdateAccountRequestDto
+    ): BaseResponseDto<String> {
+        return try {
+            accountService.updateAccount(accountId, updateAccountRequestDto)
+            BaseResponseDto.success("")
+        } catch (e: Exception) {
+            BaseResponseDto.error(e.message)
+        }
+    }
+
+    @DeleteMapping("/{accountId}")
+    suspend fun deleteAccounts(
+        @PathVariable accountId: String
+    ): BaseResponseDto<String> {
+        return try {
+            accountService.deleteAccount(accountId)
             BaseResponseDto.success("")
         } catch (e: Exception) {
             BaseResponseDto.error(e.message)

@@ -2,7 +2,7 @@ package com.accountbook.account.dto
 
 import java.math.BigDecimal
 
-data class CreateAccountRequestDto(
+data class UpdateAccountRequestDto(
     val accountDt: String,
     val divisionId: String,
     val memberId: String,

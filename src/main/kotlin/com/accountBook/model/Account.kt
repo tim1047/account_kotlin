@@ -24,5 +24,5 @@ data class Account(
 ) : BaseEntity<Long>() {
     override fun getId(): Long? = accountId
 
-    override fun isNew(): Boolean = forceInsert
+    override fun isNew(): Boolean = forceInsert || accountId == null
 }
