@@ -27,6 +27,6 @@ data class CategorySumDto (
 
 data class CategoryDtlSumDto (
     val categorySeq: String,
-    val categorySeqNm: String,
+    val categorySeqNm: String?,
     val sumPrice: BigDecimal
 )

@@ -33,13 +33,14 @@ class CategoryService(
         val categorySumMap = mutableMapOf<String, CategorySumDto>()
         for (categorySum in categorySumList) {
             val categoryId = categorySum.categoryId
+
             if (categorySumMap.containsKey(categoryId)) {
                 if (categorySumMap[categoryId] != null) {
                     categorySumMap[categoryId]!!.sumPrice.add(categorySum.sumPrice)
                     categorySumMap[categoryId]!!.createData(categorySum.categorySeq!!, categorySum.categorySeqNm!!, categorySum.sumPrice)
                 }
             } else {
-                categorySum.createData(categorySum.categorySeq!!, categorySum.categorySeqNm!!, categorySum.sumPrice)
+                categorySum.createData(categorySum.categorySeq!!, if (categorySum.categorySeqNm == null) "" else categorySum.categorySeqNm, categorySum.sumPrice)
                 categorySumMap[categoryId] = categorySum
             }
         }
