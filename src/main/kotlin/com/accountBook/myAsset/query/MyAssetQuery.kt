@@ -22,4 +22,34 @@ object MyAssetQuery {
         where	1=1
         order by a.asset_id
     """
+
+    const val GET_MY_ASSET_LIST = """
+        select	a.*
+            ,	mg.my_asset_group_nm
+        from	(
+                    select	ma.asset_id
+                        ,	ma.my_asset_id
+                        ,	ma.my_asset_nm
+                        ,	ma.ticker
+                        ,	ma.price
+                        ,	ma.qty
+                        , 	a.asset_nm
+                        ,	ma.ticker
+                        ,	ma.price_div_cd
+                        ,	ma.exchange_rate_yn
+                        ,	cast(maa.price * maa.qty as integer) as sum_price
+                        ,	ma.my_asset_group_id
+                        ,	ma.cashable_yn
+                        ,   max(maa.mod_dts) over()				 as my_asset_accum_dts
+                    from	my_asset		ma
+                    inner join 	my_asset_accum 	maa
+                    on		ma.my_asset_id 	= maa.my_asset_id
+                    inner join asset			a
+                    on		ma.asset_id 	= a.asset_id
+                    where	1=1
+                    and		maa.accum_dt 	= :procDt
+                ) a
+        left outer join my_asset_group mg
+        on 	a.my_asset_group_id = mg.my_asset_group_id
+    """
 }

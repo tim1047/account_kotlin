@@ -2,6 +2,7 @@ package com.accountbook.myAsset
 
 import com.accountbook.dto.BaseResponseDto
 import com.accountbook.myAsset.dto.MyAssetSumResponseDto
+import com.accountbook.myAsset.dto.MyAssetResponseDto
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -16,6 +17,32 @@ import java.time.YearMonth
 class MyAssetController (
     private val myAssetService: MyAssetService
 ) {
+
+    @GetMapping("")
+    suspend fun getMysAsset(
+        @RequestParam(value = "strtDt", required = false) strtDt: String,
+        @RequestParam(value = "endDt", required = false) endDt: String,
+        @RequestParam(value = "type", required = false) type: String = "delayed"
+    ): BaseResponseDto<MyAssetResponseDto> {
+        return try {
+            val dateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd")
+            val monthFormatter = DateTimeFormatter.ofPattern("yyyyMM")
+
+            val startDate = LocalDate.parse(strtDt, dateFormatter)
+            var currentMonth = YearMonth.from(startDate)
+
+            var procDt = currentMonth.format(monthFormatter)
+
+            var myAssetList = myAssetService.getMyAssetList(procDt)
+            
+            var myAssetResponseDto = MyAssetResponseDto()
+            myAssetResponseDto.createData(myAssetList)
+            
+            BaseResponseDto.success(myAssetResponseDto)
+        } catch (e: Exception) {
+            BaseResponseDto.error(e.message)
+        }
+    }
 
     @GetMapping("/sum")
     suspend fun getMysAssetSum(

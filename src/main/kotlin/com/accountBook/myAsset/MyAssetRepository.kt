@@ -2,6 +2,7 @@ package com.accountbook.myAsset
 
 import com.accountbook.model.MyAsset
 import com.accountbook.myAsset.dto.MyAssetSumDto
+import com.accountbook.myAsset.dto.MyAssetDto
 
 import org.springframework.data.r2dbc.repository.Query
 import org.springframework.data.repository.kotlin.CoroutineCrudRepository
@@ -12,6 +13,9 @@ import AssetQuery
 @Repository
 interface MyAssetRepository : CoroutineCrudRepository<MyAsset, String> {
     
+    @Query(MyAssetQuery.GET_MY_ASSET_LIST)
+    suspend fun getMyAssetList(procDt: String): List<MyAssetDto>
+
     @Query(MyAssetQuery.GET_MY_ASSET_SUM)
     suspend fun getMyAssetSum(procDt: String): List<MyAssetSumDto>
 }
