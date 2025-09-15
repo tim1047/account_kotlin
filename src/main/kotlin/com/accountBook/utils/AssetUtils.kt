@@ -8,26 +8,113 @@ import java.math.BigDecimal
 
 @Service
 class AssetUtils (
-    private val webClient: WebClient.Builder
+    private val webClient: WebClient.Builder,
+    private val ALPHA_VANTAGE_API_KEY: String = "OKELFY0ZAZHMI015",
+    private val KRX_OPEN_API_KEY: String = "cc96dfdf193b4591cb499bd164f365776d218786df3282c56609b4af6db5cf1c",
+    private val KRX_ETF_OPEN_API_KEY: String = "cc96dfdf193b4591cb499bd164f365776d218786df3282c56609b4af6db5cf1c"
+
 ) {
     data class ExchangeRateApiResponse(
         val rates: Map<String, Double>
     )
     
-    
     suspend fun getExchangeRate(): Map<String, BigDecimal> {
-        try {
+        try {            
             val response: ExchangeRateApiResponse = webClient.build()
                 .get()
                 .uri("https://api.exchangerate-api.com/v4/latest/KRW")
-                .retrieve().awaitBody()
-            return mapOf(
+                .retrieve()
+                .awaitBody()
+            
+                return mapOf(
                 "USD" to BigDecimal(1.0 / response.rates["USD"]!!),
                 "JPY" to BigDecimal(1.0 / response.rates["JPY"]!!)
             )
             
         } catch (e: Exception) {
-            throw RuntimeException("환율 정보 조회 실패", e)
+            throw RuntimeException(e.message, e)
+        }
+    }
+
+    suspend fun getUSStockPrice(ticker: String): String {
+        try {
+            val response: Map<String, Map<String, String>> = webClient.build()
+                .get()
+                .uri("https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=$ticker&apikey=$ALPHA_VANTAGE_API_KEY")
+                .retrieve()
+                .awaitBody()
+
+            return response["Global Quote"]!!["05. price"]!!
+            
+        } catch (e: Exception) {
+            throw RuntimeException(e.message, e)
+        }
+    }
+
+    suspend fun getKrxStockPrice(ticker: String): BigDecimal {
+        try {
+            var price = BigDecimal.ZERO
+
+            val response: Map<String, Any> = webClient.build()
+                .get()
+                .uri("https://apis.data.go.kr/1160100/service/GetStockSecuritiesInfoService/getStockPriceInfo?serviceKey=$KRX_OPEN_API_KEY&numOfRows=1&resultType=json&likeSrtnCd=$ticker")
+                .retrieve()
+                .awaitBody()
+            
+            val responseMap = response["response"] as Map<String, Any>
+            val body = responseMap["body"] as Map<String, Any>
+            val totalCount = body["totalCount"] as Int
+
+            if (totalCount == 0) {
+                price = this.getKrxEtfPrice(ticker)
+            } else {
+                val items = body["items"] as Map<String, Any>
+                val itemList = items["item"] as List<Map<String, String>>
+                val stockInfo = itemList.first()
+                val clpr = stockInfo["clpr"] as String
+                price = BigDecimal(clpr)
+            }
+            return price
+
+        } catch (e: Exception) {
+            throw RuntimeException(e.message, e)
+        }
+    }
+
+    suspend fun getKrxEtfPrice(ticker: String): BigDecimal {
+        try {
+            val response: Map<String, Any> = webClient.build()
+                .get()
+                .uri("https://apis.data.go.kr/1160100/service/GetSecuritiesProductInfoService/getETFPriceInfo?serviceKey=$KRX_ETF_OPEN_API_KEY&numOfRows=1&resultType=json&likeSrtnCd=$ticker")
+                .retrieve()
+                .awaitBody()
+            
+            val responseMap = response["response"] as Map<String, Any>
+            val body = responseMap["body"] as Map<String, Any>
+            val items = body["items"] as Map<String, Any>
+            val itemList = items["item"] as List<Map<String, String>>
+            val stockInfo = itemList.first()
+            val clpr = stockInfo["clpr"] as String
+            return BigDecimal(clpr)
+
+        } catch (e: Exception) {
+            throw RuntimeException(e.message, e)
+        }
+    }
+
+    suspend fun getCryptoPrice(ticker: String): BigDecimal {
+        try {
+            val response: Map<String, Map<String, BigDecimal>> = webClient.build()
+                .get()
+                .uri("https://api.coingecko.com/api/v3/simple/price?symbols=$ticker&vs_currencies=usd")
+                .retrieve()
+                .awaitBody()
+            
+            val priceMap = response[ticker]!!
+            return priceMap["usd"]!!
+
+        } catch (e: Exception) {
+            throw RuntimeException(e.message, e)
         }
     }
 }
