@@ -5,7 +5,7 @@ import org.springframework.data.relational.core.mapping.Table
 import org.apache.logging.log4j.util.StringMap
 import java.math.BigDecimal
 
-@Table("myAsset")
+@Table("my_asset")
 data class MyAsset(
     @Id
     val myAssetId: String,
@@ -17,6 +17,7 @@ data class MyAsset(
     val qty: Double,
     val exchangeRateYn: String,
     val myAssetGroupId: String,
+    val cashableYn: String
 ) : BaseEntity<String>() {
     override fun getId(): String? = myAssetId
 

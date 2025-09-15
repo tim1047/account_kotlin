@@ -1,4 +1,8 @@
 object MyAssetQuery {
+    const val GET_MY_ASSET_SEQ = """
+        select nextval('seq_my_asset')
+    """
+    
     const val GET_MY_ASSET_SUM = """
         select	b.accum_dt
             ,	a.asset_id

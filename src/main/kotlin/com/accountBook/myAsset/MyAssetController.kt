@@ -3,12 +3,18 @@ package com.accountbook.myAsset
 import com.accountbook.dto.BaseResponseDto
 import com.accountbook.myAsset.dto.MyAssetSumResponseDto
 import com.accountbook.myAsset.dto.MyAssetResponseDto
+import com.accountbook.myAsset.dto.UpdateMyAssetRequestDto
+import com.accountbook.myAsset.dto.CreateMyAssetRequestDto
 import com.accountbook.utils.AssetUtils
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RequestBody
 import java.time.format.DateTimeFormatter
 import java.time.LocalDate
 import java.time.YearMonth
@@ -24,7 +30,6 @@ class MyAssetController (
     suspend fun getMysAsset(
         @RequestParam(value = "strtDt", required = false) strtDt: String,
         @RequestParam(value = "endDt", required = false) endDt: String,
-        @RequestParam(value = "type", required = false) type: String = "delayed"
     ): BaseResponseDto<MyAssetResponseDto> {
         return try {
             val dateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd")
@@ -43,7 +48,7 @@ class MyAssetController (
             val exchageRateInfo = assetUtils.getExchangeRate()
             myAssetResponseDto.usdKrwRate = exchageRateInfo["USD"]!!
             myAssetResponseDto.jpyKrwRate = exchageRateInfo["JPY"]!!
-            
+
             BaseResponseDto.success(myAssetResponseDto)
         } catch (e: Exception) {
             BaseResponseDto.error(e.message)
@@ -79,5 +84,54 @@ class MyAssetController (
         } catch (e: Exception) {
             BaseResponseDto.error(e.message)
         }   
-    }    
+    }
+    
+    @PostMapping("")
+    suspend fun insertMyAsset(
+        @RequestBody request: CreateMyAssetRequestDto
+    ): BaseResponseDto<String> {
+        return try {
+            myAssetService.insertMyAsset(request)
+            BaseResponseDto.success("")
+        } catch (e: Exception) {
+            BaseResponseDto.error(e.message)
+        }
+    }
+
+    @PutMapping("/{myAssetId}")
+    suspend fun updateMyAsset(
+        @PathVariable myAssetId: String,
+        @RequestBody updateMyAssetRequestDto: UpdateMyAssetRequestDto
+    ): BaseResponseDto<String> {
+        return try {
+            myAssetService.updateMyAsset(myAssetId, updateMyAssetRequestDto)
+            BaseResponseDto.success("")
+        } catch (e: Exception) {
+            BaseResponseDto.error(e.message)
+        }
+    }
+
+    @DeleteMapping("/{myAssetId}")
+    suspend fun deleteMyAsset(
+        @PathVariable myAssetId: String
+    ): BaseResponseDto<String> {
+        return try {
+            myAssetService.deleteMyAsset(myAssetId)
+            BaseResponseDto.success("")
+        } catch (e: Exception) {
+            BaseResponseDto.error(e.message)
+        }
+    }
+
+    @PostMapping("/refresh")
+    suspend fun refreshMyAssetList(
+        @RequestParam(value = "strtDt", required = false) strtDt: String,
+        @RequestParam(value = "endDt", required = false) endDt: String,
+    ): BaseResponseDto<String> {
+        return try {
+            BaseResponseDto.success("")
+        } catch (e: Exception) {
+            BaseResponseDto.error(e.message)
+        }
+    }
 }

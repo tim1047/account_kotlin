@@ -12,7 +12,10 @@ import AssetQuery
 
 @Repository
 interface MyAssetRepository : CoroutineCrudRepository<MyAsset, String> {
-    
+
+    @Query(MyAssetQuery.GET_MY_ASSET_SEQ)
+    suspend fun getMyAssetSeq(): Long
+
     @Query(MyAssetQuery.GET_MY_ASSET_LIST)
     suspend fun getMyAssetList(procDt: String): List<MyAssetDto>
 

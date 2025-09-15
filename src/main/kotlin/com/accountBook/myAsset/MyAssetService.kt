@@ -4,6 +4,11 @@ import com.accountbook.myAsset.MyAssetRepository
 import com.accountbook.myAsset.dto.MyAssetSumDto
 import com.accountbook.myAsset.dto.MyAssetTotalDto
 import com.accountbook.myAsset.dto.MyAssetGroupDto
+import com.accountbook.myAsset.dto.MyAssetDto
+import com.accountbook.myAsset.dto.UpdateMyAssetRequestDto
+import com.accountbook.myAsset.dto.CreateMyAssetRequestDto
+import com.accountbook.account.dto.CreateAccountRequestDto
+import com.accountbook.model.MyAsset
 import org.springframework.stereotype.Service
 import kotlin.minus
 import java.math.BigDecimal
@@ -17,7 +22,10 @@ class MyAssetService(
 
     suspend fun getMyAssetList(procDt: String): List<MyAssetTotalDto> {
         val myAssetList = myAssetRepository.getMyAssetList(procDt)
+        return this.summaryMyAssetList(myAssetList)
+    }
 
+    suspend fun summaryMyAssetList(myAssetList: List<MyAssetDto>): List<MyAssetTotalDto> {
         var myAssetTotalDtoMap: MutableMap<String, MyAssetTotalDto> = mutableMapOf()
         var myAssetGroupDtoMap: MutableMap<String, MyAssetGroupDto> = mutableMapOf()
 
@@ -73,6 +81,11 @@ class MyAssetService(
         return myAssetTotalDtoMap.values.toList()
     }
 
+    suspend fun createMyAssetList(procDt: String): List<MyAssetTotalDto> {
+        var myAssetList: List<MyAssetDto> = listOf()
+        return summaryMyAssetList(myAssetList)
+    }
+
     suspend fun getMyAssetSum(procDt: String): List<MyAssetSumDto> {
         var myAssetSums = myAssetRepository.getMyAssetSum(procDt).toMutableList()
         var totalSumPrice = BigDecimal.ZERO
@@ -88,5 +101,45 @@ class MyAssetService(
         }
         myAssetSums.add(0, MyAssetSumDto(procDt, "0", "총 자산", totalSumPrice.setScale(0, RoundingMode.DOWN)))
         return myAssetSums
+    }
+
+    suspend fun insertMyAsset(createMyAssetRequestDto: CreateMyAssetRequestDto) {
+        var myAssetId = myAssetRepository.getMyAssetSeq()
+
+        val myAssetEntity = MyAsset(
+            myAssetId=myAssetId.toString(),
+            myAssetNm=createMyAssetRequestDto.myAssetNm,
+            assetId=createMyAssetRequestDto.assetId,
+            ticker=createMyAssetRequestDto.ticker,
+            priceDivCd=createMyAssetRequestDto.priceDivCd,
+            price=createMyAssetRequestDto.price,
+            qty=createMyAssetRequestDto.qty,
+            exchangeRateYn=createMyAssetRequestDto.exchangeRateYn,
+            myAssetGroupId="0",
+            cashableYn=createMyAssetRequestDto.cashableYn
+        ).apply { forceInsert = true }
+        myAssetRepository.save(myAssetEntity)
+    }
+
+    suspend fun updateMyAsset(myAssetId: String, updateMyAssetRequestDto: UpdateMyAssetRequestDto) {
+        val existingMyAsset = myAssetRepository.findById(myAssetId)
+            ?: throw Exception("MyAsset not found: $myAssetId")
+        
+        val updatedMyAsset = existingMyAsset.copy(
+            myAssetNm = updateMyAssetRequestDto.myAssetNm ?: existingMyAsset.myAssetNm,
+            assetId = updateMyAssetRequestDto.assetId ?: existingMyAsset.assetId,
+            ticker = updateMyAssetRequestDto.ticker ?: existingMyAsset.ticker,
+            priceDivCd = updateMyAssetRequestDto.priceDivCd ?: existingMyAsset.priceDivCd,
+            price = updateMyAssetRequestDto.price ?: existingMyAsset.price,
+            qty = updateMyAssetRequestDto.qty ?: existingMyAsset.qty,
+            exchangeRateYn = updateMyAssetRequestDto.exchangeRateYn ?: existingMyAsset.exchangeRateYn,
+            myAssetGroupId = existingMyAsset.myAssetGroupId,
+            cashableYn = updateMyAssetRequestDto.cashableYn ?: existingMyAsset.cashableYn
+        )
+        myAssetRepository.save(updatedMyAsset)
+    }
+
+    suspend fun deleteMyAsset(myAssetId: String) {
+        myAssetRepository.deleteById(myAssetId)
     }
 }
