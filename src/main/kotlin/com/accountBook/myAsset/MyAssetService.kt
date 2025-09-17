@@ -40,6 +40,8 @@ class MyAssetService(
         var myAssetGroupDtoMap: MutableMap<String, MyAssetGroupDto> = mutableMapOf()
 
         for (myAsset in myAssetList) {
+            myAsset.sumPrice = myAsset.sumPrice?.setScale(0, RoundingMode.DOWN)
+
             var sumPrice = myAsset.sumPrice
             var netWorthSumPrice = myAsset.sumPrice
             var cashableSumPrice = BigDecimal.ZERO
