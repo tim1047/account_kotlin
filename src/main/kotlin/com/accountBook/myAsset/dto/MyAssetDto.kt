@@ -15,7 +15,7 @@ data class MyAssetDto (
     val priceDivCd: String,
     val price: BigDecimal,
     val qty: Double,
-    val sumPrice: BigDecimal,
+    val sumPrice: BigDecimal? = BigDecimal.ZERO,
     val exchangeRateYn: String,
     val myAssetGroupId: String,
     val myAssetGroupNm: String? = "",

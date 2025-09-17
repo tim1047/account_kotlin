@@ -5,11 +5,13 @@ import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.awaitBody
 import java.math.BigDecimal
+import java.math.RoundingMode
+
 
 @Service
 class AssetUtils (
     private val webClient: WebClient.Builder,
-    private val ALPHA_VANTAGE_API_KEY: String = "OKELFY0ZAZHMI015",
+    private val TWELVE_DATA_API_KEY: String = "aa19e92250cf43639ada8fca3a8c54b7",
     private val KRX_OPEN_API_KEY: String = "cc96dfdf193b4591cb499bd164f365776d218786df3282c56609b4af6db5cf1c",
     private val KRX_ETF_OPEN_API_KEY: String = "cc96dfdf193b4591cb499bd164f365776d218786df3282c56609b4af6db5cf1c"
 
@@ -27,8 +29,8 @@ class AssetUtils (
                 .awaitBody()
             
                 return mapOf(
-                "USD" to BigDecimal(1.0 / response.rates["USD"]!!),
-                "JPY" to BigDecimal(1.0 / response.rates["JPY"]!!)
+                "USD" to BigDecimal(1.0 / response.rates["USD"]!!).setScale(0, RoundingMode.DOWN),
+                "JPY" to BigDecimal(1.0 / response.rates["JPY"]!!).setScale(2, RoundingMode.DOWN)
             )
             
         } catch (e: Exception) {
@@ -36,15 +38,15 @@ class AssetUtils (
         }
     }
 
-    suspend fun getUSStockPrice(ticker: String): String {
+    suspend fun getUSStockPrice(ticker: String): BigDecimal {
         try {
-            val response: Map<String, Map<String, String>> = webClient.build()
+            val response: Map<String, String> = webClient.build()
                 .get()
-                .uri("https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=$ticker&apikey=$ALPHA_VANTAGE_API_KEY")
+                .uri("https://api.twelvedata.com/price?symbol=$ticker&apikey=$TWELVE_DATA_API_KEY")
                 .retrieve()
                 .awaitBody()
 
-            return response["Global Quote"]!!["05. price"]!!
+            return BigDecimal(response["price"])
             
         } catch (e: Exception) {
             throw RuntimeException(e.message, e)
@@ -104,13 +106,14 @@ class AssetUtils (
 
     suspend fun getCryptoPrice(ticker: String): BigDecimal {
         try {
+            var symbol = ticker.lowercase()
             val response: Map<String, Map<String, BigDecimal>> = webClient.build()
                 .get()
-                .uri("https://api.coingecko.com/api/v3/simple/price?symbols=$ticker&vs_currencies=usd")
+                .uri("https://api.coingecko.com/api/v3/simple/price?symbols=$symbol&vs_currencies=usd")
                 .retrieve()
                 .awaitBody()
             
-            val priceMap = response[ticker]!!
+            val priceMap = response[symbol]!!
             return priceMap["usd"]!!
 
         } catch (e: Exception) {

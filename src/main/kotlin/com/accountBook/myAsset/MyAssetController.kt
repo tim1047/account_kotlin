@@ -27,7 +27,7 @@ class MyAssetController (
 ) {
 
     @GetMapping("")
-    suspend fun getMysAsset(
+    suspend fun getMyAsset(
         @RequestParam(value = "strtDt", required = false) strtDt: String,
         @RequestParam(value = "endDt", required = false) endDt: String,
     ): BaseResponseDto<MyAssetResponseDto> {
@@ -40,7 +40,7 @@ class MyAssetController (
 
             var procDt = currentMonth.format(monthFormatter)
 
-            var myAssetList = myAssetService.getMyAssetList(procDt)
+            var myAssetList = myAssetService.getMyAssetAccumList(procDt)
             
             var myAssetResponseDto = MyAssetResponseDto()
             myAssetResponseDto.createData(myAssetList)
@@ -125,11 +125,28 @@ class MyAssetController (
 
     @PostMapping("/refresh")
     suspend fun refreshMyAssetList(
-        @RequestParam(value = "strtDt", required = false) strtDt: String,
-        @RequestParam(value = "endDt", required = false) endDt: String,
-    ): BaseResponseDto<String> {
+        @RequestBody request: Map<String, Any>
+    ): BaseResponseDto<MyAssetResponseDto> {
         return try {
-            BaseResponseDto.success("")
+            var procDt = request["procDt"] as String
+
+            val dateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd")
+            val monthFormatter = DateTimeFormatter.ofPattern("yyyyMM")
+
+            val procDate = LocalDate.parse(procDt, dateFormatter)
+            var currentMonth = YearMonth.from(procDate)
+
+            procDt = currentMonth.format(monthFormatter)
+
+            val refreshMyAssetList = myAssetService.refreshMyAssetList(procDt)
+            var myAssetResponseDto = MyAssetResponseDto()
+            myAssetResponseDto.createData(refreshMyAssetList)
+            
+            val exchageRateInfo = assetUtils.getExchangeRate()
+            myAssetResponseDto.usdKrwRate = exchageRateInfo["USD"]!!
+            myAssetResponseDto.jpyKrwRate = exchageRateInfo["JPY"]!!
+
+            BaseResponseDto.success(myAssetResponseDto)
         } catch (e: Exception) {
             BaseResponseDto.error(e.message)
         }

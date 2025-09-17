@@ -16,9 +16,12 @@ interface MyAssetRepository : CoroutineCrudRepository<MyAsset, String> {
     @Query(MyAssetQuery.GET_MY_ASSET_SEQ)
     suspend fun getMyAssetSeq(): Long
 
-    @Query(MyAssetQuery.GET_MY_ASSET_LIST)
-    suspend fun getMyAssetList(procDt: String): List<MyAssetDto>
+    @Query(MyAssetQuery.GET_MY_ASSET_ACCUM_LIST)
+    suspend fun getMyAssetAccumList(procDt: String): List<MyAssetDto>
 
     @Query(MyAssetQuery.GET_MY_ASSET_SUM)
     suspend fun getMyAssetSum(procDt: String): List<MyAssetSumDto>
+
+    @Query(MyAssetQuery.GET_MY_ASSET_LIST)
+    suspend fun getMyAssetList(myAssetId: String): List<MyAssetDto>
 }
