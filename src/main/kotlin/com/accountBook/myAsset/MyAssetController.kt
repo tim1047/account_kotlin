@@ -6,6 +6,7 @@ import com.accountbook.myAsset.dto.MyAssetResponseDto
 import com.accountbook.myAsset.dto.UpdateMyAssetRequestDto
 import com.accountbook.myAsset.dto.CreateMyAssetRequestDto
 import com.accountbook.utils.AssetUtils
+import com.accountbook.utils.DateUtils
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
@@ -15,15 +16,13 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestBody
-import java.time.format.DateTimeFormatter
-import java.time.LocalDate
-import java.time.YearMonth
 
 @RestController
 @RequestMapping("/my-asset")
 class MyAssetController (
     private val myAssetService: MyAssetService,
-    private val assetUtils: AssetUtils
+    private val assetUtils: AssetUtils,
+    private val dateUtils: DateUtils
 ) {
 
     @GetMapping("")
@@ -32,15 +31,7 @@ class MyAssetController (
         @RequestParam(value = "endDt", required = false) endDt: String,
     ): BaseResponseDto<MyAssetResponseDto> {
         return try {
-            val dateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd")
-            val monthFormatter = DateTimeFormatter.ofPattern("yyyyMM")
-
-            val startDate = LocalDate.parse(strtDt, dateFormatter)
-            var currentMonth = YearMonth.from(startDate)
-
-            var procDt = currentMonth.format(monthFormatter)
-
-            var myAssetList = myAssetService.getMyAssetAccumList(procDt)
+            var myAssetList = myAssetService.getMyAssetAccumList(dateUtils.convertYYYYMMDDToYYYYMM(strtDt))
             
             var myAssetResponseDto = MyAssetResponseDto()
             myAssetResponseDto.createData(myAssetList)
@@ -63,17 +54,14 @@ class MyAssetController (
         return try {
             var resultList = ArrayList<MyAssetSumResponseDto>();
             
-            val dateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd")
-            val monthFormatter = DateTimeFormatter.ofPattern("yyyyMM")
+            val startDate = this.dateUtils.convertDtToDate(strtDt)
+            val endDate = this.dateUtils.convertDtToDate(endDt)
 
-            val startDate = LocalDate.parse(strtDt, dateFormatter)
-            val endDate = LocalDate.parse(endDt, dateFormatter)
-
-            var currentMonth = YearMonth.from(startDate)
-            val endMonth = YearMonth.from(endDate)
+            var currentMonth = this.dateUtils.getCurrentYearMonth(startDate)
+            val endMonth = this.dateUtils.getCurrentYearMonth(endDate)
 
             while (!currentMonth.isAfter(endMonth)) {
-                var procDt = currentMonth.format(monthFormatter)
+                var procDt = this.dateUtils.convertYYYYMMDDToYYYYMM(strtDt)
 
                 val myAssetSums = myAssetService.getMyAssetSum(procDt)
 
@@ -130,15 +118,8 @@ class MyAssetController (
         return try {
             var procDt = request["procDt"] as String
 
-            val dateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd")
-            val monthFormatter = DateTimeFormatter.ofPattern("yyyyMM")
+            val refreshMyAssetList = myAssetService.refreshMyAssetList(this.dateUtils.convertYYYYMMDDToYYYYMM(procDt))
 
-            val procDate = LocalDate.parse(procDt, dateFormatter)
-            var currentMonth = YearMonth.from(procDate)
-
-            procDt = currentMonth.format(monthFormatter)
-
-            val refreshMyAssetList = myAssetService.refreshMyAssetList(procDt)
             var myAssetResponseDto = MyAssetResponseDto()
             myAssetResponseDto.createData(refreshMyAssetList)
             

@@ -4,6 +4,7 @@ import com.accountbook.division.dto.DivisionDto
 import com.accountbook.division.dto.DivisionSumDto
 import com.accountbook.division.dto.DivisionSumGroupByMonthDto
 import com.accountbook.division.DivisionRepository
+import com.accountbook.utils.DateUtils
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -17,7 +18,8 @@ import kotlin.collections.mutableListOf
 
 @Service
 class DivisionService(
-    private val divisionRepository: DivisionRepository
+    private val divisionRepository: DivisionRepository,
+    private val dateUtils: DateUtils
 ) {
     
     suspend fun getDivisions(): List<DivisionDto> {
@@ -58,15 +60,12 @@ class DivisionService(
     suspend fun getDivisionSumGroupByMonth(divisionId: String, procDt: String): List<DivisionSumGroupByMonthDto> {
         var divisionSumGroupByMonthList = ArrayList<DivisionSumGroupByMonthDto>()
 
-        val inputFormatter = DateTimeFormatter.ofPattern("yyyyMM")
-        val outputFormatter = DateTimeFormatter.ofPattern("yyyyMMdd")
-
-        val yearMonth = YearMonth.parse(procDt, inputFormatter)
+        val yearMonth = this.dateUtils.getCurentYearMonthByYYYYMM(procDt)
 
         for (i in 0..5) {
             val target = yearMonth.minusMonths(i.toLong())
-            val firstDay = target.atDay(1).format(outputFormatter)
-            val lastDay = target.atEndOfMonth().format(outputFormatter)
+            val firstDay = this.dateUtils.getFirstDay(yearMonth)
+            val lastDay = this.dateUtils.getLastDay(yearMonth)
 
             val divisionSums = divisionRepository.getDivisionsSum(firstDay, lastDay)
 
@@ -86,12 +85,9 @@ class DivisionService(
         var divisionSumDailyMap: MutableMap<String, MutableList<BigDecimal>> = mutableMapOf()
         var accountYYYYMMSet: MutableSet<String> = mutableSetOf("일자")
 
-        val formatter = DateTimeFormatter.ofPattern("yyyyMM")
-
         for (d in divisionSumDaily) {
-            val accountDt = YearMonth.parse(d.accountYYYYMM, formatter)
-            val year = YearMonth.from(accountDt).year
-            val month = YearMonth.from(accountDt).monthValue
+            val year = this.dateUtils.getYear(d.accountYYYYMM)
+            val month = this.dateUtils.getMonth(d.accountYYYYMM)
 
             accountYYYYMMSet.add(year.toString() + "년 " + month.toString() + "월")
             
