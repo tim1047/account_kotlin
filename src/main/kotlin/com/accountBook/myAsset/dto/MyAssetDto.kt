@@ -29,7 +29,7 @@ data class MyAssetGroupDto (
     var myAssetGroupNm: String,
     var myAssetNm: String,
     var assetId: String,
-    // var assetNm: String,
+    var assetNm: String,
     var sumPrice: BigDecimal,
     // var qty: Double,
     var data: MutableList<MyAssetDto>

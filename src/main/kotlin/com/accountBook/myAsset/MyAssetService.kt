@@ -75,6 +75,7 @@ class MyAssetService(
                         myAssetGroupNm = myAsset.myAssetGroupNm!!,
                         myAssetNm = myAsset.myAssetNm,
                         assetId = myAsset.assetId,
+                        assetNm = myAsset.assetNm,
                         sumPrice = BigDecimal.ZERO,
                         data = mutableListOf()
                     )
