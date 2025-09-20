@@ -186,7 +186,7 @@ class MyAssetService(
             var sumPrice = myAssetSum.sumPrice
 
             if (AssetConstants.DEBT.equals(myAssetSum.assetId)) {
-                sumPrice = sumPrice.minus(BigDecimal.valueOf(-1))
+                sumPrice = sumPrice.multiply(BigDecimal.valueOf(-1))
             }
             totalSumPrice = totalSumPrice.add(sumPrice)
             myAssetSum.accumDt = procDt
