@@ -32,6 +32,10 @@ class DateUtils (
         return LocalDate.parse(dt, this.dateFormatter)
     }
 
+    suspend fun convertYearMonthToDt(yearMonth: YearMonth): String {
+        return yearMonth.format(this.monthFormatter)
+    }
+
     suspend fun getFirstDay(yearMonth: YearMonth): String {
         return yearMonth.atDay(1).format(this.dateFormatter)
     }

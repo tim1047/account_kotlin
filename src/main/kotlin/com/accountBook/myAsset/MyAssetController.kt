@@ -61,7 +61,7 @@ class MyAssetController (
             val endMonth = this.dateUtils.getCurrentYearMonth(endDate)
 
             while (!currentMonth.isAfter(endMonth)) {
-                var procDt = this.dateUtils.convertYYYYMMDDToYYYYMM(strtDt)
+                var procDt = this.dateUtils.convertYearMonthToDt(currentMonth)
 
                 val myAssetSums = myAssetService.getMyAssetSum(procDt)
 
